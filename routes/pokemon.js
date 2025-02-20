@@ -6,17 +6,21 @@ dotenv.config();
 const router = express.Router();
 const API_URL = process.env.API_URL;
 
-router.get("/", async(req, res) => {
+router.get("/", async (req, res) => {
     try {
-        const response = await axios.get(`${API_URL}?limit=20`);
-        const data = response.data;
-        return res.render("pages/home",{pokemonList: response.data.results});
+        const response = await axios.get(`${API_URL}?limit=30`);
+        const data = response.data.results.map(pokemon => {
+            const id = pokemon.url.split("/").slice(-2, -1)[0]; // Extracts ID from URL
+            return { ...pokemon, id };
+        });
+        return res.render("pages/home", { pokemonList: data });
     } catch (error) {
         return res.status(500).json({
             message: error.message,
         });
     }
 });
+
 
 router.get("/pokemon/:name", async(req,res) => {
 try {
